@@ -5,10 +5,11 @@ import '../screen/logIn.dart';
 import '../screen/register.dart';
 import '../screen/user.dart';
 import '../screen/home.dart';
+import '../screen/programar_clase.dart';
 import '../screen/settings_general.dart'; // Importa la pantalla de configuración general
 import '../screen/settings_asignaturas.dart'; // Importa la pantalla de configuración de asignaturas
 import '../controllers/authController.dart';
-import '../screen/perfil.dart';
+import 'screen/perfil.dart';
 import '../controllers/userListController.dart';
 import '../controllers/userModelController.dart';
 import '../controllers/connectedUsersController.dart';
@@ -109,6 +110,10 @@ class MyApp extends StatelessWidget {
           GetPage(
             name: '/settings_general',
             page: () => SettingsGeneralPage(),
+          ),
+          GetPage(
+            name: '/programar_clase',
+            page: () => ProgramarClasePage(),
           ),
           GetPage(
             name: '/settings_asignaturas',

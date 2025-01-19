@@ -53,6 +53,21 @@
   "i_am_teacher": "I am a Teacher",
   "i_am_student": "I am a Student",
   "role_note": "Note: After selecting your role, we recommend updating your profile with information such as availability, description, and subjects of interest.",
+  "user_profile": "User Profile",
+  "ratings": "Ratings",
+  "subjects": "Subjects",
+  "students": "Students",
+  "description": "Description",
+  "no_description": "No description available",
+  "subjects": "Subjects",
+  "no_level_specified": "No level specified",
+  "no_subjects_assigned": "No subjects assigned",
+  "availability": "Availability",
+  "no_availability_configured": "No availability configured",
+  "class_history": "Class History",
+  "class_history_description": "This is where the student's class history will be displayed.",
+  "settings": "Settings",
+  "update_data": "Update Data",
 
   
   
@@ -277,6 +292,63 @@
   "@role_note": {
     "description": "Note regarding profile update after role selection",
     "type": "text"
+  },
+  "@user_profile": {
+    "description": "Title for the user profile page",
+    "type": "text"
+  },
+  "@ratings": {
+    "description": "Label for the ratings section",
+    "type": "text"
+  },
+  "@subjects": {
+    "description": "Label for the subjects section",
+    "type": "text"
+  },
+  "@students": {
+    "description": "Label for the students section",
+    "type": "text"
+  },
+  "@description": {
+    "description": "Title for the description section",
+    "type": "text"
+  },
+  "@no_description": {
+    "description": "Text for when no description is available",
+    "type": "text"
+  },
+  "@no_level_specified": {
+    "description": "Text for when no level is specified for a subject",
+    "type": "text"
+  },
+  "@no_subjects_assigned": {
+    "description": "Text for when no subjects are assigned to a user",
+    "type": "text"
+  },
+  "@availability": {
+    "description": "Title for the availability section",
+    "type": "text"
+  },
+  "@no_availability_configured": {
+    "description": "Text for when availability has not been configured",
+    "type": "text"
+  },
+  "@class_history": {
+    "description": "Title for the class history section",
+    "type": "text"
+  },
+  "@class_history_description": {
+    "description": "Description text for the class history section",
+    "type": "text"
+  },
+  "@settings": {
+    "description": "Label for the settings button",
+    "type": "text"
+  },
+  "@update_data": {
+    "description": "Label for the update data button",
+    "type": "text"
   }
+
 }
 

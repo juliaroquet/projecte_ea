@@ -53,6 +53,20 @@
   "i_am_teacher": "Soy Profesor",
   "i_am_student": "Soy Estudiante",
   "role_note": "Nota: Después de seleccionar tu rol, te recomendamos actualizar tu perfil con información como disponibilidad, descripción y asignaturas de interés.",
+  "user_profile": "Perfil de Usuario",
+  "ratings": "Valoraciones",
+  "subjects": "Asignaturas",
+  "students": "Alumnos",
+  "description": "Descripción",
+  "no_description": "Sin descripción",
+  "subjects": "Asignaturas",
+  "no_subjects_assigned": "No tienes asignaturas asignadas",
+  "availability": "Disponibilidad",
+  "no_availability_configured": "No has configurado tu disponibilidad",
+  "class_history": "Historial de Clases",
+  "class_history_description": "Aquí se mostrará el historial de clases del alumno.",
+  "settings": "Configuración",
+  "update_data": "Actualizar Datos",
 
   "@login": {
     "description": "Título de la página de inicio de sesión",
@@ -268,6 +282,58 @@
   },
   "@role_note": {
     "description": "Nota para sugerir actualizar el perfil después de seleccionar el rol",
+    "type": "text"
+  },
+  "@user_profile": {
+    "description": "Título de la pantalla del perfil de usuario",
+    "type": "text"
+  },
+  "@ratings": {
+    "description": "Etiqueta para la sección de valoraciones",
+    "type": "text"
+  },
+  "@subjects": {
+    "description": "Etiqueta para la sección de asignaturas",
+    "type": "text"
+  },
+  "@students": {
+    "description": "Etiqueta para el número de alumnos de un profesor",
+    "type": "text"
+  },
+  "@description": {
+    "description": "Título para la sección de descripción",
+    "type": "text"
+  },
+  "@no_description": {
+    "description": "Texto mostrado cuando no hay descripción disponible",
+    "type": "text"
+  },
+  "@no_subjects_assigned": {
+    "description": "Texto mostrado cuando no hay asignaturas asignadas",
+    "type": "text"
+  },
+  "@availability": {
+    "description": "Título para la sección de disponibilidad",
+    "type": "text"
+  },
+  "@no_availability_configured": {
+    "description": "Texto mostrado cuando la disponibilidad no está configurada",
+    "type": "text"
+  },
+  "@class_history": {
+    "description": "Título para la sección de historial de clases",
+    "type": "text"
+  },
+  "@class_history_description": {
+    "description": "Texto que describe el historial de clases para un alumno",
+    "type": "text"
+  },
+  "@settings": {
+    "description": "Texto para el botón de configuración",
+    "type": "text"
+  },
+  "@update_data": {
+    "description": "Texto para el botón de actualizar datos",
     "type": "text"
   }
 }

@@ -333,21 +333,38 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Contenedor con bordes redondeados y sombra para el calendario
-            Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 8.0,
-                    offset: Offset(0, 4), // Sombra sutil
+
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Animación
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _animation.value,
+                child: Icon(
+                  Icons.favorite,
+                  color: theme.primaryColor.withOpacity(
+                      themeController.themeMode.value == ThemeMode.dark ? 0.9 : 0.7),
+                  size: 80,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          // Lista de usuarios conectados
+          Expanded(
+            child: Obx(() {
+              if (connectedUsersController.connectedUsers.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No hay usuarios conectados.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: theme.textTheme.bodyLarge?.color,
+                    ),
+
                   ),
                 ],
               ),
@@ -405,83 +422,113 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         },
                       ),
                     ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            AppLocalizations.of(context)?.translate('classes_for_day') ?? 'Clases para ${_selectedDay != null ? _selectedDay.toString().split(' ')[0] : 'ningún día'}:',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        ListView(
-                          shrinkWrap: true,
-                          children: (_events[_selectedDay] ?? [] )
-                              .map((event) => ListTile(
-                                    title: Text(event),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
-                                      onPressed: () {
-                                        setState(() {
-                                          _events[_selectedDay]?.remove(event);
-                                          if (_events[_selectedDay]?.isEmpty ?? true) {
-                                            _events.remove(_selectedDay);
-                                          }
-                                        });
-                                        _saveEvents();
-                                      },
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ],
+return Scaffold(
+  appBar: AppBar(
+    title: Text('Mi Página'),
+  ),
+  body: SingleChildScrollView(
+    child: Column(
+      children: [
+        Row(
+          children: [
+            // Sección de clases para el día y la lista de eventos
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      AppLocalizations.of(context)?.translate('classes_for_day') ?? 
+                      'Clases para ${_selectedDay != null ? _selectedDay.toString().split(' ')[0] : 'ningún día'}:',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            // Contenedor con bordes redondeados y sombra para los gráficos de progreso
-            Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 8.0,
-                    offset: Offset(0, 4), // Sombra sutil
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  SizedBox(height: 24),
-                  Text(
-                    AppLocalizations.of(context)?.translate('subjects_progress') ?? 'Progreso de las asignaturas:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 16),
-                  Column(
-                    children: _buildProgressCharts(),
+                  ListView(
+                    shrinkWrap: true,
+                    children: (_events[_selectedDay] ?? [] )
+                        .map((event) => ListTile(
+                              title: Text(event),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    _events[_selectedDay]?.remove(event);
+                                    if (_events[_selectedDay]?.isEmpty ?? true) {
+                                      _events.remove(_selectedDay);
+                                    }
+                                  });
+                                  _saveEvents();
+                                },
+                              ),
+                            ))
+                        .toList(),
                   ),
                 ],
               ),
             ),
           ],
         ),
+        // Contenedor con bordes redondeados y sombra para los gráficos de progreso
+        Container(
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8.0,
+                offset: Offset(0, 4), // Sombra sutil
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SizedBox(height: 24),
+              Text(
+                AppLocalizations.of(context)?.translate('subjects_progress') ?? 'Progreso de las asignaturas:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16),
+              Column(
+                children: _buildProgressCharts(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+  floatingActionButton: Column(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      // Botón para programar clases visible para todos
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8.0), // Separación del botón de mapa
+        child: FloatingActionButton(
+          onPressed: () => Get.toNamed('/programar_clase'),
+          backgroundColor: Theme.of(context).primaryColor,
+          child: const Icon(Icons.add),
+          tooltip: 'Programar Clase',
+        ),
       ),
-    );
-  }
-}
+      // Botón para ver el mapa
+      FloatingActionButton(
+        onPressed: () => Get.toNamed('/map'),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.map),
+        tooltip: 'Ver Mapa',
+      ),
+    ],
+  ),
+);
+
 
             
             

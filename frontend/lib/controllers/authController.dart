@@ -30,6 +30,7 @@ class AuthController extends GetxController {
   void setUser(UserModel newUser) {
     user.value = newUser;
     print('Usuario actualizado: ${user.value?.toJson()}');
+    print('Es profesor: ${user.value?.isProfesor}');
   }
 
   // Métodos para obtener token, userId y userName

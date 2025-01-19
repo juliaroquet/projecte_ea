@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/asignaturaModel.dart';
+import '../models/clase.dart'; // Importar el modelo ClaseModel desde el archivo específico
+import '../models/review.dart'; // Importar el modelo ReviewModel desde el archivo específico
 
 class UserModel with ChangeNotifier {
   String id;
@@ -18,6 +20,11 @@ class UserModel with ChangeNotifier {
   List<AsignaturaModel>? asignaturasImparte;
   Map<String, dynamic>? location;
 
+  // Nuevas propiedades
+  double? mediaValoraciones; // Media de valoraciones del profesor
+  List<ClaseModel>? historialClases; // Historial de clases del alumno
+  List<ReviewModel>? reviews; // Reviews recibidas por el profesor
+
   UserModel({
     required this.id,
     required this.name,
@@ -34,6 +41,9 @@ class UserModel with ChangeNotifier {
     this.disponibilidad,
     this.asignaturasImparte,
     this.location,
+    this.mediaValoraciones,
+    this.historialClases,
+    this.reviews,
   });
 
   // Getters para latitud y longitud
@@ -64,10 +74,18 @@ class UserModel with ChangeNotifier {
         if (item is Map<String, dynamic>) {
           return AsignaturaModel.fromJson(item);
         } else {
-          return AsignaturaModel(id: item.toString(), nombre: 'Sin nombre', nivel: '');
+          return AsignaturaModel(
+              id: item.toString(), nombre: 'Sin nombre', nivel: '');
         }
       }).toList(),
       location: json['location'] ?? {},
+      mediaValoraciones: json['mediaValoraciones']?.toDouble(),
+      historialClases: (json['historialClases'] as List?)
+          ?.map((claseJson) => ClaseModel.fromJson(claseJson))
+          .toList(),
+      reviews: (json['reviews'] as List?)
+          ?.map((reviewJson) => ReviewModel.fromJson(reviewJson))
+          .toList(),
     );
   }
 
@@ -88,6 +106,9 @@ class UserModel with ChangeNotifier {
       'disponibilidad': disponibilidad,
       'asignaturasImparte': asignaturasImparte?.map((e) => e.toJson()).toList(),
       'location': location,
+      'mediaValoraciones': mediaValoraciones,
+      'historialClases': historialClases?.map((clase) => clase.toJson()).toList(),
+      'reviews': reviews?.map((review) => review.toJson()).toList(),
     };
   }
 
@@ -108,7 +129,10 @@ class UserModel with ChangeNotifier {
       descripcion: $descripcion,
       disponibilidad: $disponibilidad,
       asignaturasImparte: ${asignaturasImparte?.map((item) => item.toString()).toList()},
-      location: $location
+      location: $location,
+      mediaValoraciones: $mediaValoraciones,
+      historialClases: $historialClases,
+      reviews: $reviews
     }
     ''';
   }

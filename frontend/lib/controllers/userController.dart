@@ -16,112 +16,118 @@ class UserController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
-  Future<void> logIn() async {
-    if (mailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Todos los campos son obligatorios',
-          snackPosition: SnackPosition.BOTTOM);
-      return;
+Future<void> logIn() async {
+  if (mailController.text.isEmpty || passwordController.text.isEmpty) {
+    Get.snackbar('Error', 'Todos los campos son obligatorios',
+        snackPosition: SnackPosition.BOTTOM);
+    return;
+  }
+
+  isLoading.value = true;
+
+  try {
+    print("Iniciando proceso de login...");
+
+    // Verificar permisos de ubicación
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Permisos de ubicación denegados.');
+      }
     }
 
-    isLoading.value = true;
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception(
+          'Permisos de ubicación denegados permanentemente. Habilítelos en la configuración.');
+    }
 
-    try {
-      // Verificar permisos de ubicación
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Permisos de ubicación denegados.');
-        }
+    // Obtener las coordenadas del dispositivo
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.bestForNavigation,
+      timeLimit: const Duration(seconds: 10),
+    );
+
+    print("Coordenadas obtenidas: (${position.latitude}, ${position.longitude})");
+
+    // Llamada al servicio de login
+    final response = await userService.logIn({
+      'identifier': mailController.text, // Correo o username
+      'password': passwordController.text,
+      'lat': position.latitude.toString(),
+      'lng': position.longitude.toString(),
+    });
+
+    print("Respuesta del servidor recibida: ${response.data}");
+
+    if (response.statusCode == 200) {
+      final userData = response.data['usuario'] ?? {};
+      final userId = userData['id'] ?? '0';
+      final token = response.data['token'] ?? '';
+
+      // Validar que los datos críticos estén presentes
+      if (userId == '0' || token.isEmpty) {
+        throw Exception('Datos críticos faltantes en la respuesta del servidor.');
       }
 
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-            'Permisos de ubicación denegados permanentemente. Habilítelos en la configuración.');
+      // Almacenar userId y token en el AuthController
+      final authController = Get.find<AuthController>();
+      authController.setUserId(userId);
+      authController.setToken(token);
+
+      if (authController.getToken.isEmpty) {
+        throw Exception('El token devuelto por el servidor es nulo o vacío.');
       }
 
-      // Obtener las coordenadas del dispositivo
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-        timeLimit: const Duration(seconds: 10),
+      print("Token configurado correctamente: ${authController.getToken}");
+
+      // Configurar el usuario en UserModelController
+      userModelController.setUser(
+        id: userId,
+        name: userData['nombre'] ?? 'Desconocido',
+        username: userData['username'] ?? 'No especificado',
+        mail: userData['email'] ?? 'No especificado',
+        password: '', // Nunca asignamos la contraseña desde el backend
+        fechaNacimiento: userData['fechaNacimiento'] ?? 'Sin especificar',
+        isProfesor: userData['isProfesor'] ?? false,
+        isAlumno: userData['isAlumno'] ?? false,
+        isAdmin: userData['isAdmin'] ?? false,
+        conectado: true,
+        foto: userData['foto'] ?? '',
+        descripcion: userData['descripcion'] ?? '',
+        disponibilidad: (userData['disponibilidad'] as List?)?.map((item) {
+          return {
+            'dia': item['dia'].toString(),
+            'turno': item['turno'].toString(),
+          };
+        }).toList(),
+        asignaturasImparte: userData['asignaturasImparte'] ?? [],
+        location: {
+          'coordinates': [position.longitude, position.latitude],
+        },
       );
 
-      print("Coordenadas obtenidas: (${position.latitude}, ${position.longitude})");
+      print("Usuario configurado correctamente: ${userModelController.user.value}");
+      print("Es profesor: ${userModelController.user.value?.isProfesor}");
 
-      final response = await userService.logIn({
-        'identifier': mailController.text, // Correo o username
-        'password': passwordController.text,
-        'lat': position.latitude.toString(),
-        'lng': position.longitude.toString(),
-      });
-
-      if (response.statusCode == 200) {
-        final userData = response.data['usuario'] ?? {};
-        final locationData = userData['location']?['coordinates'] ?? [0.0, 0.0];
-
-        final userId = userData['id'] ?? '0';
-        final token = response.data['token'] ?? '';
-
-        // Validar que los datos críticos estén presentes
-        if (userId == '0' || token.isEmpty) {
-          throw Exception('Datos críticos faltantes en la respuesta del servidor.');
-        }
-
-        // Almacenar userId y token en el AuthController
-        final authController = Get.find<AuthController>();
-        authController.setUserId(userId);
-        authController.setToken(token);
-
-        // Verificar que el token se haya configurado correctamente
-        if (authController.getToken.isEmpty) {
-          throw Exception('El token devuelto por el servidor es nulo o vacío.');
-        }
-        print("Token configurado correctamente: ${authController.getToken}");
-
-        // Llamar a `setUser` en `UserModelController` con argumentos nombrados
-        userModelController.setUser(
-          id: userId,
-          name: userData['nombre'] ?? 'Desconocido',
-          username: userData['username'] ?? 'No especificado',
-          mail: userData['email'] ?? 'No especificado',
-          password: '', // Nunca asignamos la contraseña desde el backend
-          fechaNacimiento: userData['fechaNacimiento'] ?? 'Sin especificar',
-          isProfesor: userData['isProfesor'] ?? false,
-          isAlumno: userData['isAlumno'] ?? false,
-          isAdmin: userData['isAdmin'] ?? false,
-          conectado: true,
-          foto: userData['foto'] ?? '',
-          descripcion: userData['descripcion'] ?? '',
-          disponibilidad: (userData['disponibilidad'] as List?)?.map((item) {
-            return {
-              'dia': item['dia'].toString(),
-              'turno': item['turno'].toString(),
-            };
-          }).toList(),
-          asignaturasImparte: userData['asignaturasImparte'] ?? [],
-          location: {
-            'coordinates': [position.longitude, position.latitude],
-          },
-        );
-
-        print("Datos asignados correctamente al modelo UserModel.");
-
-        // Comprobar rol y redirigir
-        checkRoleAndNavigate();
-      } else {
-        errorMessage.value =
-            response.data['message'] ?? 'Credenciales incorrectas';
-        Get.snackbar('Error', errorMessage.value,
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    } catch (e) {
-      errorMessage.value = 'Error al conectar con el servidor: $e';
+      // Comprobar rol y redirigir
+      checkRoleAndNavigate();
+    } else {
+      errorMessage.value =
+          response.data['message'] ?? 'Credenciales incorrectas';
       Get.snackbar('Error', errorMessage.value,
           snackPosition: SnackPosition.BOTTOM);
-    } finally {
-      isLoading.value = false;
     }
+  } catch (e) {
+    errorMessage.value = 'Error al conectar con el servidor: $e';
+    Get.snackbar('Error', errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM);
+    print("Error durante el login: $e");
+  } finally {
+    isLoading.value = false;
   }
+}
+
 
   void checkRoleAndNavigate() {
     final user = userModelController.user.value;
